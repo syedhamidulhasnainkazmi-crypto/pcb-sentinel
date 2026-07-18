@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["python310", "python310Packages.pip"]
+
+[phases.install]
+cmds = ["pip install --upgrade pip", "pip install numpy==1.26.4", "pip install -r requirements.txt"]
+
+[start]
+cmd = "gunicorn app_nodb:app"

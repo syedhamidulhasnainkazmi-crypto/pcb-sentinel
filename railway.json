@@ -1,0 +1,11 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "pip install --upgrade pip && pip install numpy==1.26.4 && pip install -r requirements.txt"
+  },
+  "deploy": {
+    "startCommand": "gunicorn app_nodb:app",
+    "healthcheckPath": "/",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}

@@ -1,5 +1,5 @@
 Flask==2.3.3
-Flask-Login==0.6.2
+Flask-Login==0.6.3
 ultralytics==8.0.196
 opencv-python-headless==4.8.1.78
 Pillow==10.0.1

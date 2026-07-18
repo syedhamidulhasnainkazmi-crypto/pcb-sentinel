@@ -23,10 +23,6 @@ import bcrypt
 
 from detector import YOLOv8Detector, draw_detections
 
-# ============ APP SETUP ============
-app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'change-this-secret-key-in-production')
-
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

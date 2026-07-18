@@ -5,6 +5,7 @@
   "deploy": { 
     "startCommand": "gunicorn app_nodb:app", 
     "healthcheckPath": "/", 
+    "healthcheckTimeout": 300, 
     "restartPolicyType": "ON_FAILURE" 
   } 
 } 

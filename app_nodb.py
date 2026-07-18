@@ -6,6 +6,7 @@ Works without Flask-SQLAlchemy - detection only, no history saving.
 import os
 import json
 import secrets
+import threading
 from datetime import datetime
 
 from flask import (
@@ -22,6 +23,10 @@ import cv2
 import bcrypt
 
 from detector import YOLOv8Detector, draw_detections
+
+# ============ APP SETUP ============
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'change-this-secret-key-in-production')
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -65,20 +70,35 @@ class User(UserMixin):
     def can_scan(self):
         return self.scans_remaining() > 0
 
-# ============ LOAD MODEL ============
+# ============ LOAD MODEL (in background) ============
 detector = None
-if os.path.exists(MODEL_PATH):
-    try:
-        detector = YOLOv8Detector(MODEL_PATH)
-        print("[INFO] Model loaded successfully")
-    except Exception as e:
-        print(f"[WARN] Could not load model: {e}")
-else:
-    print(f"[WARN] Model file not found at {MODEL_PATH}")
+detector_loading = True
+
+def load_model_background():
+    global detector, detector_loading
+    if os.path.exists(MODEL_PATH):
+        try:
+            detector = YOLOv8Detector(MODEL_PATH)
+            print("[INFO] Model loaded successfully")
+        except Exception as e:
+            print(f"[WARN] Could not load model: {e}")
+    else:
+        print(f"[WARN] Model file not found at {MODEL_PATH}")
+    detector_loading = False
+
+# Start loading in background so app starts instantly
+thread = threading.Thread(target=load_model_background)
+thread.start()
+print("[INFO] App starting (model loading in background)")
 
 @login_manager.user_loader
 def load_user(user_id):
     return users.get(int(user_id))
+
+# ============ HEALTH CHECK ============
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok', 'detector_loading': detector_loading, 'detector_ready': detector is not None}), 200
 
 # ============ PUBLIC ROUTES ============
 
@@ -182,6 +202,16 @@ def detect():
     if file.filename == '':
         return jsonify({'error': 'No image selected.'}), 400
     
+    # Get confidence threshold from request
+    try:
+        confidence = float(request.form.get('confidence', 0.25))
+        confidence = max(0.0, min(1.0, confidence))
+    except ValueError:
+        confidence = 0.25
+    
+    # Set detector confidence
+    detector.conf_thresh = confidence
+    
     filename = secure_filename(file.filename)
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     saved_filename = f"{timestamp}_{filename}"
@@ -216,7 +246,8 @@ def detect():
         'defects': results['defects'],
         'processing_time': results['processing_time'],
         'result_image_url': f"/uploads/{result_filename}",
-        'scans_remaining': remaining
+        'scans_remaining': remaining,
+        'confidence_used': confidence
     })
 
 @app.route('/uploads/<filename>')

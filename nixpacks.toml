@@ -1,9 +1,8 @@
 [phases.setup]
-nixPkgs = ["python310", "python310Packages.pip"]
+nixPkgs = ["python310"]
 
 [phases.install]
 cmds = [
-  "pip install --user --upgrade pip",
   "pip install --user numpy==1.26.4",
   "pip install --user -r requirements.txt"
 ]

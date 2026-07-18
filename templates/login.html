@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Log In — PCB Sentinel{% endblock %}
+{% block content %}
+<div class="auth-wrap glass-card glow-blue">
+  <h2>Welcome Back</h2>
+  <p class="auth-sub">Log in to your PCB Sentinel dashboard</p>
+  <form method="POST">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" name="username" required>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Log In</button>
+  </form>
+  <div class="auth-footer-link">
+    Don't have an account? <a href="{{ url_for('register') }}">Sign up free</a>
+  </div>
+</div>
+{% endblock %}

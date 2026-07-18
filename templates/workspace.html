@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Inspection Workspace — PCB Sentinel{% endblock %}
+{% block content %}
+<section style="padding-top: 10px;">
+  <div class="container" style="max-width: 800px;">
+    <h2 style="font-size: 1.8rem; margin-bottom: 6px;">Inspection Workspace</h2>
+    <p style="color: var(--text-muted); margin-bottom: 24px;">Upload a PCB image to run defect detection.</p>
+
+    {% if not model_loaded %}
+      <div class="flash-msg error">Detection model is not loaded on the server. Uploads will fail until it's added — see setup instructions.</div>
+    {% endif %}
+
+    <div class="glass-card glow-blue">
+      <div class="dropzone" id="dropzone">
+        <div style="font-size: 2rem; margin-bottom: 10px;">📤</div>
+        <div style="font-weight: 600; margin-bottom: 4px;">Drop PCB image here or click to browse</div>
+        <div style="color: var(--text-muted); font-size: 0.85rem;">JPG, PNG, BMP supported</div>
+        <input type="file" id="imageInput" accept="image/*" style="display:none;">
+      </div>
+
+      <button id="detectBtn" class="btn btn-primary btn-block" style="margin-top: 20px;" disabled>
+        🔍 Run Detection
+      </button>
+
+      <div id="status" style="text-align:center; margin-top: 14px; color: var(--text-muted); font-size: 0.9rem;"></div>
+
+      <div id="resultsArea" style="display:none; margin-top: 20px;">
+        <img id="resultImage" src="">
+        <div id="defectsList" style="margin-top: 16px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

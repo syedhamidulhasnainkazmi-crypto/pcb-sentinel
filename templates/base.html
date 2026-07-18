@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PCB Sentinel — AI-Powered PCB Quality Assurance{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-flex">
+      <a href="{{ url_for('landing') }}" class="logo-group">
+        <span class="logo-chip">🔷</span>
+        PCB <span class="brand-accent">Sentinel</span>
+      </a>
+
+      {% if current_user.is_authenticated %}
+        <div class="nav-links">
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('workspace') }}">Workspace</a>
+          <a href="{{ url_for('history') }}">History</a>
+        </div>
+        <div class="nav-actions">
+          <span class="scan-badge {{ 'low' if (current_user.scans_remaining() is not none and current_user.scans_remaining() <= 1) else '' }}">
+            ⚡ {{ current_user.scans_remaining() if current_user.scans_remaining() is not none else '∞' }} scans left
+          </span>
+          <a href="{{ url_for('logout') }}" class="btn btn-ghost btn-sm">Logout</a>
+        </div>
+      {% else %}
+        <div class="nav-links">
+          <a href="{{ url_for('landing') }}#problem-solution">Product</a>
+          <a href="{{ url_for('landing') }}#pricing">Pricing</a>
+          <a href="{{ url_for('landing') }}#about">About</a>
+          <a href="{{ url_for('support') }}">Support</a>
+        </div>
+        <div class="nav-actions">
+          <a href="{{ url_for('login') }}" class="btn btn-ghost btn-sm">Log In</a>
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top: 20px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-msg {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  {% block content %}{% endblock %}
+
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="{{ url_for('landing') }}#about">About</a>
+        <a href="{{ url_for('landing') }}#pricing">Pricing</a>
+        <a href="{{ url_for('support') }}">Support</a>
+        <a href="mailto:contact@pcbsentinel.com">Contact</a>
+      </div>
+      <div>© 2026 PCB Sentinel. All rights reserved. Built by Hamid Kazmi.</div>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Sign Up — PCB Sentinel{% endblock %}
+{% block content %}
+<div class="auth-wrap glass-card glow-blue">
+  <h2>Create Your Account</h2>
+  <p class="auth-sub">5 free scans, no credit card required</p>
+  <form method="POST">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" name="username" required>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label>Company (optional)</label>
+      <input type="text" name="company">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" required minlength="6">
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" name="marketing_consent" id="marketing_consent">
+      <label for="marketing_consent">I agree to receive product updates and tips via email. You can unsubscribe anytime.</label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+  </form>
+  <div class="auth-footer-link">
+    Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+  </div>
+</div>
+{% endblock %}

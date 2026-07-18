@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — PCB Sentinel{% endblock %}
+{% block content %}
+<section style="padding-top: 10px;">
+  <div class="container">
+    <h2 style="font-size: 1.8rem; margin-bottom: 6px;">Welcome back, {{ current_user.username }}</h2>
+    <p style="color: var(--text-muted); margin-bottom: 10px;">
+      {% if not model_loaded %}
+        <span style="color: var(--danger);">⚠ Detection model is not loaded on the server yet — contact support if this persists.</span>
+      {% else %}
+        Ready to inspect your next PCB.
+      {% endif %}
+    </p>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="num">{{ total_scans }}</div>
+        <div class="label">Total Scans</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">{{ total_defects }}</div>
+        <div class="label">Defects Found</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">{{ scans_remaining if scans_remaining is not none else '∞' }}</div>
+        <div class="label">Scans Remaining {{ '(Trial)' if current_user.plan == 'trial' else '' }}</div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap: 14px; margin-bottom: 36px;">
+      <a href="{{ url_for('workspace') }}" class="btn btn-primary">🔍 Run New Scan</a>
+      <a href="{{ url_for('history') }}" class="btn btn-ghost">📋 View Full History</a>
+      {% if current_user.plan == 'trial' %}
+        <a href="{{ url_for('landing') }}#pricing" class="btn btn-gold">⚡ Upgrade Plan</a>
+      {% endif %}
+    </div>
+
+    <div class="glass-card glow-blue">
+      <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Recent Activity</h3>
+      {% if recent %}
+        {% for r in recent %}
+          <div class="history-row">
+            <div>
+              <div style="font-weight: 600;">{{ r.image_filename }}</div>
+              <div style="color: var(--text-muted); font-size: 0.8rem;">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+            </div>
+            <div>
+              {% if r.defect_detected %}
+                <span class="severity-pill high">{{ r.defect_count }} DEFECT(S)</span>
+              {% else %}
+                <span class="severity-pill low">CLEAN</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p style="color: var(--text-muted);">No scans yet — run your first inspection to see activity here.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Detection History — PCB Sentinel{% endblock %}
+{% block content %}
+<section style="padding-top: 10px;">
+  <div class="container" style="max-width: 800px;">
+    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">Detection History</h2>
+    <div class="glass-card glow-blue">
+      {% if records %}
+        {% for r in records %}
+          <div class="history-row">
+            <div>
+              <div style="font-weight: 600;">{{ r.image_filename }}</div>
+              <div style="color: var(--text-muted); font-size: 0.8rem;">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }} · {{ '%.0f'|format(r.processing_time) }}ms</div>
+            </div>
+            <div>
+              {% if r.defect_detected %}
+                <span class="severity-pill high">{{ r.defect_count }} DEFECT(S)</span>
+              {% else %}
+                <span class="severity-pill low">CLEAN</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p style="color: var(--text-muted);">No scans yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
